@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
@@ -12,7 +14,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private Button mTrueButton;
     private Button mFalseButton;
-    private Button mNextButton;
+    private ImageButton mNextButton;
+    private ImageButton mPrevButton;
     private TextView mQuestionTextView;
     private ArrayList<Question> mQuestionAL= new ArrayList <>();
     static int mCurrentIndex;
@@ -59,7 +62,15 @@ public class QuizActivity extends AppCompatActivity {
 
 
         mQuestionTextView= (TextView) findViewById(R.id.question_text_view);
-        updateQuestion();
+        mQuestionTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mCurrentIndex==mQuestionAL.size()-1) mCurrentIndex=0;
+                else mCurrentIndex++;
+                updateQuestion();
+            }
+        });
+
 
         mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -76,8 +87,18 @@ public class QuizActivity extends AppCompatActivity {
                checkAnswer(false);
             }
         });
+        mPrevButton = findViewById(R.id.prev_button);
+        mPrevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mCurrentIndex != 0) {
+                    mCurrentIndex--;
+                    updateQuestion();
+                }
+            }
+        });
 
-        mNextButton = (Button) findViewById(R.id.next_button);
+        mNextButton = findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
