@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.bignerdranch.android.geoquiz.Question;
 import java.util.ArrayList;
 
 public class QuizActivity extends AppCompatActivity {
@@ -18,12 +17,31 @@ public class QuizActivity extends AppCompatActivity {
     private ArrayList<Question> mQuestionAL= new ArrayList <>();
     static int mCurrentIndex;
 
+    /** Method declaration
+     */
+
     private void updateQuestion() {
         int question = mQuestionAL.get(mCurrentIndex).getTextResId();
         mQuestionTextView.setText(question);
     }
 
+    private void checkAnswer(boolean userPressedTrue){
+        int messageResId;
+        boolean answerIsTrue = userPressedTrue == mQuestionAL.get(mCurrentIndex).isAnswerTrue();
 
+        if (userPressedTrue == answerIsTrue) {
+            messageResId = R.string.correct_toast;
+        } else {
+            messageResId = R.string.incorrect_toast;
+        }
+        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    /** OnCreate Override
+     *
+     * @param savedInstanceState
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +49,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        // Array with Model Classes and initiation
         mQuestionAL.add(new Question(R.string.question_americas, true) );
         mQuestionAL.add(new Question(R.string.question_mideast, false) );
         mQuestionAL.add(new Question(R.string.question_africa, true) );
@@ -38,28 +57,23 @@ public class QuizActivity extends AppCompatActivity {
         mQuestionAL.add(new Question(R.string.question_oceans, true) );
 
 
+
         mQuestionTextView= (TextView) findViewById(R.id.question_text_view);
         updateQuestion();
-
-        /* True and False buttons with an OnClickListener  */
 
         mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mQuestionAL.get(mCurrentIndex).isAnswerTrue() == true)
-                    Toast.makeText(QuizActivity.this,R.string.correct_toast, Toast.LENGTH_SHORT).show();
-                else  Toast.makeText(QuizActivity.this,R.string.incorrect_toast,Toast.LENGTH_SHORT).show();
+                checkAnswer(true);
+
             }
         });
         mFalseButton = findViewById(R.id.false_button);
         mFalseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mQuestionAL.get(mCurrentIndex).isAnswerTrue() == false)
-                    Toast.makeText(QuizActivity.this,R.string.correct_toast, Toast.LENGTH_SHORT).show();
-                else  Toast.makeText(QuizActivity.this,R.string.incorrect_toast,Toast.LENGTH_SHORT).show();
-
+               checkAnswer(false);
             }
         });
 
