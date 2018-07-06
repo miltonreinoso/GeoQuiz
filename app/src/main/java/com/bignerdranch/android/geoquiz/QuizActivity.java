@@ -124,6 +124,10 @@ public class QuizActivity extends AppCompatActivity {
 
     }
 
+    /** Other Overrided Methods and Log prints
+     *
+     */
+
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
