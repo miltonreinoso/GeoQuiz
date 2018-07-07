@@ -1,5 +1,6 @@
 package com.bignerdranch.android.geoquiz;
 
+import android.content.Intent;
 import android.icu.lang.UProperty;
 import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
@@ -20,14 +21,21 @@ public class QuizActivity extends AppCompatActivity {
     private Button mFalseButton;
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
+    private Button mCheatButton;
+
     private TextView mQuestionTextView;
+
     private ArrayList<Question> mQuestionAL= new ArrayList <>();
+
     private int mCurrentIndex;
 
-    private static final String KEY_INDEX = "index";
+    private boolean answerIsTrue;
     private static final String TAG = "QuizActivity";
+    private static final String KEY_INDEX = "index";
 
-    /** Method declaration
+
+
+    /** Method declarations
      */
 
     private void updateQuestion() {
@@ -37,8 +45,8 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void checkAnswer(boolean userPressedTrue){
-        int messageResId;
-        boolean answerIsTrue = userPressedTrue == mQuestionAL.get(mCurrentIndex).isAnswerTrue();
+        int messageResId = 0;
+        answerIsTrue = mQuestionAL.get(mCurrentIndex).isAnswerTrue();
 
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
@@ -94,13 +102,16 @@ public class QuizActivity extends AppCompatActivity {
 
             }
         });
+
         mFalseButton = findViewById(R.id.false_button);
         mFalseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               checkAnswer(false);
+
+                checkAnswer(false);
             }
         });
+
         mPrevButton = findViewById(R.id.prev_button);
         mPrevButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +130,16 @@ public class QuizActivity extends AppCompatActivity {
                 if (mCurrentIndex==mQuestionAL.size()-1) mCurrentIndex=0;
                 else mCurrentIndex++;
                 updateQuestion();
+            }
+        });
+
+        mCheatButton = findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean answerIsTrue = mQuestionAL.get(mCurrentIndex).isAnswerTrue();
+                Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                startActivity(i);
             }
         });
 
