@@ -1,8 +1,10 @@
 package com.bignerdranch.android.geoquiz;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.icu.lang.UProperty;
 import android.nfc.Tag;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,16 +25,18 @@ public class QuizActivity extends AppCompatActivity {
     private ImageButton mPrevButton;
     private Button mCheatButton;
 
+
     private TextView mQuestionTextView;
 
     private ArrayList<Question> mQuestionAL= new ArrayList <>();
 
     private int mCurrentIndex;
+    private boolean mIsCheater;
 
     private boolean answerIsTrue;
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
-
+    private static final int REQUEST_CODE_CHEAT = 0;
 
 
     /** Method declarations
@@ -47,15 +51,20 @@ public class QuizActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue){
         int messageResId = 0;
         answerIsTrue = mQuestionAL.get(mCurrentIndex).isAnswerTrue();
-
-        if (userPressedTrue == answerIsTrue) {
-            messageResId = R.string.correct_toast;
-        } else {
-            messageResId = R.string.incorrect_toast;
+        if(mQuestionAL.get(mCurrentIndex).isAnswerCheated()) messageResId = R.string.jugment_toast;
+        else {
+            if (userPressedTrue == answerIsTrue) {
+                messageResId = R.string.correct_toast;
+            } else {
+                messageResId = R.string.incorrect_toast;
+            }
         }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
                 .show();
     }
+
+
+
 
     /** OnCreate Override
      *
@@ -74,11 +83,11 @@ public class QuizActivity extends AppCompatActivity {
         }
 
         // Array with Model Classes and initiation
-        mQuestionAL.add(new Question(R.string.question_americas, true) );
-        mQuestionAL.add(new Question(R.string.question_mideast, false) );
-        mQuestionAL.add(new Question(R.string.question_africa, true) );
-        mQuestionAL.add(new Question(R.string.question_asia, false) );
-        mQuestionAL.add(new Question(R.string.question_oceans, true) );
+        mQuestionAL.add(new Question(R.string.question_americas, true,false) );
+        mQuestionAL.add(new Question(R.string.question_mideast, false,false) );
+        mQuestionAL.add(new Question(R.string.question_africa, true,false) );
+        mQuestionAL.add(new Question(R.string.question_asia, false, false) );
+        mQuestionAL.add(new Question(R.string.question_oceans, true, false) );
 
 
 
@@ -129,6 +138,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mCurrentIndex==mQuestionAL.size()-1) mCurrentIndex=0;
                 else mCurrentIndex++;
+                mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -139,7 +149,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View view) {
                 boolean answerIsTrue = mQuestionAL.get(mCurrentIndex).isAnswerTrue();
                 Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
-                startActivity(i);
+                startActivityForResult(i,REQUEST_CODE_CHEAT);
             }
         });
 
@@ -154,6 +164,19 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX,mCurrentIndex);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode != Activity.RESULT_OK){
+            return;
+        }
+        if(requestCode == REQUEST_CODE_CHEAT){
+            if (data == null){
+                return;
+            }
+            mQuestionAL.get(mCurrentIndex).setAnswerCheated(CheatActivity.wasAnswerShown(data));
+        }
     }
 
     @Override
