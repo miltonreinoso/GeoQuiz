@@ -18,9 +18,11 @@ import android.widget.TextView;
 
 public class CheatActivity extends AppCompatActivity {
 
+    private TextView mBuildTextView;
     private TextView mAnswerTextView;
     private Button mShowAnswerButton;
     private boolean mIsCheater;
+    private StringBuilder mBuild = new StringBuilder(Build.VERSION.SDK);
 
     private static final String EXTRA_ANSWER_IS_TRUE =
             "com.bignerdranch.android.geoquiz.answer_is_true";
@@ -98,6 +100,9 @@ public class CheatActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mBuildTextView = findViewById(R.id.buildTextView);
+        mBuildTextView.setText("API Level " + mBuild.toString());
 
 
     }
